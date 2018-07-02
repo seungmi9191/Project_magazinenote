@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin"> <!--클래스명은 xml명과 똑같을 필요 없음-->
+
+	<!-- 신청 리스트 불러오기 -->
+	<select id="selectByApplyList" resultType="userVo">
+	<![CDATA[
+		select userNo, id, name, applyDate, authState
+		from users
+		where authState > 0
+		order by applyDate desc
+	]]>
+	</select>
+	
+	<!-- 지원 내용 상세페이지 -->
+	<select id="selectView" parameterType="String" resultType="UserVo">
+	<![CDATA[
+		select userNo, id, name, authState, mnIntro, auther, urlOrigin, url
+		from users
+		where id = #{id}
+	]]>
+	</select>
+ 	
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cate"> <!--클래스명은 xml명과 똑같을 필요 없음-->
+
+	<!-- 카테고리 생성 -->
+	<insert id="insertCate" parameterType="cateVo">
+		<selectKey keyProperty="cateNo" resultType="int" order="BEFORE">
+			select seq_category_no.nextval from dual
+		</selectKey>
+		
+		<![CDATA[
+			insert into category
+			values(#{cateNo}, 
+			       #{blogNo},
+			       #{cateName}, 
+			       #{description},
+			       sysdate
+				   )
+		]]>
+	</insert> 
+
+	<!-- 특정 카테고리 정보 가져오기 -->
+	<select id="selectCate" parameterType="int" resultType="cateVo">
+		<![CDATA[
+			select cateNo, blogNo, cateName, description, regDate
+			from category
+			where cateNo =#{cateNo}
+		]]>
+	</select> 
+	
+	
+	<!-- (포스트 수까지) 카테고리 정보 가져오기 -->
+	<select id="selectList" parameterType="int" resultType="cateVo">
+ 	<![CDATA[
+ 		select c.cateNo, c.blogNo, c.cateName, c.description, to_char(c.regDate, 'YYYY/MM/DD') regDate,
+			(select count(*) from post p
+			 where p.cateNo = c.cateNo) as postnum
+		from category c
+		where blogNo = #{blogNo}
+		order by cateNo asc
+ 	]]>
+ 	</select> 
+ 	
+ 	<!-- 카테고리 삭제 -->
+ 	<delete id="deleteCate" parameterType="int">
+	<![CDATA[
+		delete
+		from category
+		where cateNo = #{cateNo}
+	]]>
+ 	</delete>
+ 	
+</mapper>

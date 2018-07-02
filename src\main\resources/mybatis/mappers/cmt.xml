@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cmt"> <!--클래스명은 xml명과 똑같을 필요 없음-->
+
+	<!-- 댓글 추가 -->
+	<insert id="insertCmt" parameterType="cmtVo">
+		<selectKey keyProperty="cmtNo" resultType="int" order="BEFORE">
+			select seq_comment_no.nextval from dual
+		</selectKey>
+		
+		<![CDATA[
+			insert into comments
+			values(#{cmtNo}, 
+			       #{postNo},
+			       #{userNo}, 
+			       #{cmtContent},
+			       sysdate
+				   )
+		]]>
+	</insert> 
+	
+	<!-- 방금 저장된 댓글 불러오기 -->
+	<select id="selectCmt" parameterType="int" resultType="cmtVo">
+		<![CDATA[
+			select cmtNo, postNo, userNo, cmtContent, to_char(regDate, 'YYYY/MM/DD') regDate,
+			       (select name
+			        from users u
+			        where m.userNo = u.userNo) name 
+			from comments m
+			where m.cmtNo =#{cmtNo}
+			order by regDate desc
+		]]>
+	</select> 
+	
+
+	<!--포스트별 댓글 불러오기-->
+	<select id="selectCmtList" parameterType="int" resultType="cmtVo">
+ 	<![CDATA[
+ 		select u.userNo, m.cmtNo, m.postNo, m.userNo, m.cmtContent, to_char(m.regDate, 'YYYY/MM/DD') regDate, u.id, u.name
+ 		from comments m, users u
+ 		where m.userNo = u.userNo
+ 		and m.postNo = #{postNo}
+ 		order by m.regDate desc
+ 	]]>
+ 	</select> 
+ 	
+ 	
+ 	<!-- 댓글삭제 -->
+ 	<delete id="deleteCmt" parameterType="int">
+ 	<![CDATA[
+ 		delete
+ 		from comments
+ 		where cmtNo = #{cmtNo}
+ 	]]>
+ 	</delete>
+
+</mapper>

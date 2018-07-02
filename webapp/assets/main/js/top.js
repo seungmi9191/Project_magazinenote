@@ -1,0 +1,1 @@
+$(document).ready(function(){$(".top").click(function(){return $("html, body").animate({scrollTop:0},300),!1})});

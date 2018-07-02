@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="post"> <!--클래스명은 xml명과 똑같을 필요 없음-->
+
+	<!-- 포스트 입력 -->
+	<insert id="insertPost" parameterType="postVo">
+	<![CDATA[
+		insert into post
+		values(seq_post_no.nextval,
+			   #{postTitle},
+			   #{postContent},
+			   #{postImage},
+			   sysdate,
+			   #{cateNo},
+			   #{blogNo}
+			  )
+	]]>
+	</insert>
+
+	<!-- 특정 회원의 선택한 카테고리 포스트 가져오기 -->
+	<!-- 선택한 카테고리가 없으면 전체를 불러옴 -->
+	<select id="selectList" parameterType="int" resultType="postVo">
+	<![CDATA[
+		select c.blogNo, p.postNo, p.cateNo, p.postTitle, p.postContent, p.postImage,
+			   to_char(p.regDate, 'YYYY/MM/DD') regDate
+			from category c, post p
+			where c.cateNo = p.cateNo
+			and p.cateNo = #{cateNo}
+			order by postNo desc
+	]]>
+	</select>
+	
+	<!-- 선택한 포스트 가져오기 -->
+	<select id="selectPost" parameterType="int" resultType="postVo">
+	<![CDATA[
+		select postNo, cateNo, postTitle, postContent, postImage,
+			   to_char(regDate, 'YYYY/MM/DD') regDate
+		from post
+		where postNo = #{postNo}
+	]]>	
+	</select>
+	
+	<!-- 작성 글 수 -->
+	<select id ="selectPostNum" parameterType="int" resultType="int">
+	<![CDATA[
+		select (select count(*) from post p 
+		       where p.blogNo = b.blogNo) as postnum
+		from blog b
+		where blogNo = #{blogNo}
+	]]>
+	</select>
+	
+	<!-- 작성자 이름 -->
+	<select id="selectUserName" parameterType="string" resultType="string">
+	<![CDATA[
+		select name
+		from users
+		where id=#{id}
+	]]>
+	</select>
+	
+	<!--포스트 삭제-->
+	<delete id="deletePost" parameterType="int">
+	<![CDATA[
+		delete
+		from post
+		where postNo = #{postNo}
+	]]>
+ 	</delete>
+
+</mapper>
